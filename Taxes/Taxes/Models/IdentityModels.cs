@@ -29,5 +29,7 @@ namespace Taxes.Models
         {
             return new ApplicationDbContext();
         }
+
+        public System.Data.Entity.DbSet<Taxes.Models.PropertyType> PropertyTypes { get; set; }
     }
 }
