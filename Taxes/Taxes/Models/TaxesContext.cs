@@ -21,8 +21,10 @@ namespace Taxes.Models
 
         public DbSet<PropertyType> PropertyTypes { get; set; }
 
-        public System.Data.Entity.DbSet<Taxes.Models.Departament> Departaments { get; set; }
+        public DbSet<Departament> Departaments { get; set; }
 
-        public System.Data.Entity.DbSet<Taxes.Models.Municipality> Municipalities { get; set; }
+        public DbSet<Municipality> Municipalities { get; set; }
+
+        public DbSet<DocumentType> DocumentTypes { get; set; }
     }
 }
