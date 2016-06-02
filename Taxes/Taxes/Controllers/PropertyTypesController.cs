@@ -17,7 +17,7 @@ namespace Taxes.Controllers
         // GET: PropertyTypes
         public ActionResult Index()
         {
-            return View(db.PropertyTypes.ToList());
+            return View(db.PropertyTypes.OrderBy(pt => pt.Description).ToList());
         }
 
         // GET: PropertyTypes/Details/5
@@ -51,7 +51,32 @@ namespace Taxes.Controllers
             if (ModelState.IsValid)
             {
                 db.PropertyTypes.Add(propertyType);
-                db.SaveChanges();
+
+
+                try
+                {
+                    db.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+
+                    if (ex.InnerException != null &&
+                        ex.InnerException.InnerException != null && 
+                        ex.InnerException.InnerException.Message.Contains("Index"))
+                    {
+                        ModelState.AddModelError(string.Empty, "There are a record with the same description");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, ex.Message);
+                    }
+
+                    return View(propertyType);
+                    
+                }
+               
+                 
+
                 return RedirectToAction("Index");
             }
 
@@ -83,7 +108,27 @@ namespace Taxes.Controllers
             if (ModelState.IsValid)
             {
                 db.Entry(propertyType).State = EntityState.Modified;
-                db.SaveChanges();
+
+                try
+                {
+                    db.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+
+                    if (ex.InnerException != null && ex.InnerException.InnerException != null 
+                        && ex.InnerException.InnerException.Message.Contains("Index"))
+                    {
+                        ModelState.AddModelError(string.Empty, "There are a record with the same description");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, ex.Message);
+                    }
+
+                    return View(propertyType);
+                }
+
                 return RedirectToAction("Index");
             }
             return View(propertyType);
