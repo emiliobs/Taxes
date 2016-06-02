@@ -23,6 +23,8 @@ namespace Taxes.Models
         //relacion con el departament(un municipio tiene un departamento) lado varios de la relación:
         public virtual Departament Departament { get; set; }
 
+        public virtual ICollection<TaxPaer> TaxPaers { get; set; }
+
 
 
 

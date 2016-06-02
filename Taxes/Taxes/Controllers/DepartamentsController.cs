@@ -109,9 +109,30 @@ namespace Taxes.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Departament departament = db.Departaments.Find(id);
+            var departament = db.Departaments.Find(id);
             db.Departaments.Remove(departament);
-            db.SaveChanges();
+
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+
+                if (ex.InnerException != null &&
+                     ex.InnerException.InnerException != null &&
+                     ex.InnerException.InnerException.Message.Contains("REFERENCE"))
+                {
+                    ModelState.AddModelError(string.Empty, "The record can't be delete because has related record.");
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, ex.Message);
+                }
+
+                return View(departament);
+            }
+
             return RedirectToAction("Index");
         }
 

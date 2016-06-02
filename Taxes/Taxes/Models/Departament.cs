@@ -22,5 +22,7 @@ namespace Taxes.Models
         //lado uno de la relacion(un departamento tiene muchos muicipios)
         public virtual  ICollection<Municipality> Municipalities { get; set; }
 
+        public virtual ICollection<TaxPaer> TaxPaers { get; set; }
+
     }
 }
