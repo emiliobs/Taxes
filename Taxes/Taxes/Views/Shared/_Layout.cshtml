@@ -37,7 +37,18 @@
                                 <li>@Html.ActionLink("Tax Pages", "Index", "TaxPaers")</li>
                             </ul>
                         </li>
-                    }                           
+                    } 
+                    @if (this.User.IsInRole("TaxPaer"))
+                    {
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tax Paer Options.<b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li>@Html.ActionLink("My Setting", "Index", "Departaments")</li>
+                                <li>@Html.ActionLink("My Taxes", "Index", "DocumentTypes")</li>
+                                <li>@Html.ActionLink("My Tickets", "Index", "Municipalities")</li>                                
+                            </ul>
+                        </li>
+                    }                                                     
                 </ul>
                 @Html.Partial("_LoginPartial")
             </div>

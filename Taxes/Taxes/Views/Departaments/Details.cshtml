@@ -21,6 +21,46 @@
     </dl>
 </div>
 <p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.DepartmentId }) |
-    @Html.ActionLink("Back to List", "Index")
+    @Html.ActionLink("Edit", "Edit", new { id = Model.DepartmentId }, new { @class = "btn btn-success" }) 
+    @Html.ActionLink("Back to List", "Index", new { }, new { @class = "btn btn-default" })
 </p>
+
+@if (Model.Municipalities.Count == 0)
+{
+    <h3>Not Miunicipalitiesadd yet.</h3>
+}
+else
+{
+    <h2>Minicipalities</h2>
+
+      <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Municipalities[0].Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Departament.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.MunicipalityId }, new { @class = "btn btn-info" })
+                    @Html.ActionLink("Details", "Details", new { id = item.MunicipalityId }, new { @class = "btn btn-warning" })
+                    @Html.ActionLink("Delete", "Delete", new { id = item.MunicipalityId }, new { @class = "btn btn-danger" })
+                </td>
+            </tr>
+        }
+
+    </table>
+}
+
