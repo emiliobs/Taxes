@@ -6,10 +6,12 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using Taxes.Classes;
 using Taxes.Models;
 
 namespace Taxes.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class TaxPaersController : Controller
     {
         private TaxesContext db = new TaxesContext();
@@ -60,7 +62,24 @@ namespace Taxes.Controllers
             if (ModelState.IsValid)
             {
                 db.TaxPaers.Add(taxPaer);
-                db.SaveChanges();
+
+                try
+                {
+                    db.SaveChanges();
+                    Utilities.CreateUserASP(taxPaer.UserName, "TaxPaer");
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError(string.Empty, ex.Message);
+
+                    ViewBag.DepartmentId = new SelectList(db.Departaments, "DepartmentId", "Name", taxPaer.DepartmentId);
+                    ViewBag.DocumentTypeId = new SelectList(db.DocumentTypes, "DocumentTypeId", "Description", taxPaer.DocumentTypeId);
+                    ViewBag.MunicipalityId = new SelectList(db.Municipalities
+                                                            .Where(m => m.DepartmentId == taxPaer.DepartmentId).OrderBy(m => m.Name),
+                                                            "MunicipalityId", "Name", taxPaer.MunicipalityId);
+                    return View(taxPaer);
+                }
+
                 return RedirectToAction("Index");
             }
 

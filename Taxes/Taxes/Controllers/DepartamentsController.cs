@@ -10,6 +10,7 @@ using Taxes.Models;
 
 namespace Taxes.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class DepartamentsController : Controller
     {
         private TaxesContext db = new TaxesContext();
@@ -35,6 +36,7 @@ namespace Taxes.Controllers
             return View(departament);
         }
 
+       
         // GET: Departaments/Create
         public ActionResult Create()
         {
