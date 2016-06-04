@@ -18,7 +18,7 @@ namespace Taxes.Controllers
         // GET: Municipalities
         public ActionResult Index()
         {
-            var municipalities = db.Municipalities.Include(m => m.Departament);
+            var municipalities = db.Municipalities.OrderBy(m => m.Name).Include(m => m.Departament);
             //var municipalities = db.Municipalities.ToList();
             return View(municipalities.ToList());
         }
@@ -55,7 +55,28 @@ namespace Taxes.Controllers
             if (ModelState.IsValid)
             {
                 db.Municipalities.Add(municipality);
-                db.SaveChanges();
+
+                try
+                {
+                    db.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+
+                    if (ex.InnerException != null && ex.InnerException.InnerException != null && 
+                        ex.InnerException.InnerException.Message.Contains("Index"))
+                    {
+                        ModelState.AddModelError(string.Empty, "There are a record with the same name in the DB");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, ex.Message);
+                    }
+
+                    ViewBag.DepartmentId = new SelectList(db.Departaments, "DepartmentId", "Name", municipality.DepartmentId);
+                    return View(municipality);
+                }
+
                 return RedirectToAction("Index");
             }
 

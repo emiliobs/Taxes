@@ -1,66 +1,79 @@
-﻿@model Taxes.Models.Departament
+﻿@model Taxes.Models.DepartmentView
 
 @{
     ViewBag.Title = "Details";
 }
 
 <h2>Details</h2>
+<h3>@ViewBag.Error</h3>
+<div class="row">
+    <div class="col-md-4">
+        <div>
+            <h3>Departament</h3>
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <hr />
+            <dl class="dl-horizontal">
+                <dt>
+                    @Html.DisplayNameFor(model => model.Name)
+                </dt>
 
-<div>
-    <h4>Departament</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Name)
+                </dd>
 
-        <dd>
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-
-    </dl>
-</div>
-<p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.DepartmentId }, new { @class = "btn btn-success" }) 
-    @Html.ActionLink("Back to List", "Index", new { }, new { @class = "btn btn-default" })
-</p>
-
-@if (Model.Municipalities.Count == 0)
-{
-    <h3>Not Miunicipalitiesadd yet.</h3>
-}
-else
-{
-    <h2>Minicipalities</h2>
-
-      <table class="table">
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Municipalities[0].Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th></th>
-        </tr>
-
-        @foreach (var item in Model)
+            </dl>
+        </div>
+        <p>
+            @Html.ActionLink("Edit", "Edit", new { id = Model.DepartmentId }, new { @class = "btn btn-success" })
+            @Html.ActionLink("Add Municipality", "AddMunicipality", new { id = Model.DepartmentId }, new { @class = "btn btn-warning" })
+            @Html.ActionLink("Back to List", "Index", new { }, new { @class = "btn btn-default" })
+        </p>
+    </div>
+    <div class="col-md-8">
+        @if (Model.MunicipalityList.Count == 0)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Departament.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Name)
-                </td>
-                <td>
-                    @Html.ActionLink("Edit", "Edit", new { id = item.MunicipalityId }, new { @class = "btn btn-info" })
-                    @Html.ActionLink("Details", "Details", new { id = item.MunicipalityId }, new { @class = "btn btn-warning" })
-                    @Html.ActionLink("Delete", "Delete", new { id = item.MunicipalityId }, new { @class = "btn btn-danger" })
-                </td>
-            </tr>
+            <h3>Not Miunicipalitiesadd yet.</h3>
+        }
+        else
+        {
+
+            <h2>Minicipalities</h2>
+
+                <table class="table">
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.MunicipalityList[0].Name)
+                        </th>
+                        <th></th>
+                    </tr>
+
+                    @for (int i = 0; i < Model.MunicipalityList.Count; i++)
+                {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => modelItem.MunicipalityList[i].Name) 
+                            </td>
+                            <td>
+                                @Html.ActionLink("Edit", "EditMunicipality", new
+                           {
+                               municipalityId = Model.MunicipalityList[i].
+                                                                                   MunicipalityId,
+                               departmentId = Model.DepartmentId
+                           },
+                                                                                   new { @class = "btn btn-info" })
+                                @Html.ActionLink("Delete", "DeleteMunicipality", new { id = Model.MunicipalityList[i].MunicipalityId },
+                                                      new
+                                                      {
+                                                          @class = "btn btn-danger",
+                                                          onClick ="return confirm('Are you sure to delete this record?')"
+                                                      })
+
+                            </td>
+                        </tr>
+                    }
+
+                </table>
         }
 
-    </table>
-}
-
+    </div>
+</div>

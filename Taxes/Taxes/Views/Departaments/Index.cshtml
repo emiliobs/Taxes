@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Taxes.Models.Departament>
+﻿@model IEnumerable<Taxes.Models.DepartmentView>
 
 @{
     ViewBag.Title = "Departaments";
@@ -14,6 +14,9 @@
         <th>
             @Html.DisplayNameFor(model => model.Name)
         </th>
+        <th>
+            # Municipalities
+        </th>
         <th></th>
     </tr>
 
@@ -23,9 +26,12 @@
             @Html.DisplayFor(modelItem => item.Name)
         </td>
         <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.DepartmentId }) |
-            @Html.ActionLink("Details", "Details", new { id=item.DepartmentId }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.DepartmentId })
+            @Html.DisplayFor(modelItem => item.MunicipalityList.Count)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.DepartmentId }, new { @class = "btn btn-info" }) 
+            @Html.ActionLink("Details", "Details", new { id=item.DepartmentId }, new { @class = "btn btn-warning" }) 
+            @Html.ActionLink("Delete", "Delete", new { id=item.DepartmentId }, new { @class = "btn btn-danger" })
         </td>
     </tr>
 }

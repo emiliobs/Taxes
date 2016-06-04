@@ -15,10 +15,174 @@ namespace Taxes.Controllers
     {
         private TaxesContext db = new TaxesContext();
 
+        [HttpGet]
+        public ActionResult EditMunicipality(int? municipalityId, int? departmentId)
+        {
+            if (municipalityId == null || departmentId == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+
+            var municipality = db.Municipalities.Find(municipalityId);
+
+            if (municipality == null)
+            {
+                return HttpNotFound();
+            }
+            
+            return View(municipality);
+        }
+
+        [HttpPost]
+        public ActionResult EditMunicipality(Municipality view)
+        {
+            if (ModelState.IsValid)
+            {
+                db.Entry(view).State = EntityState.Modified;
+
+                try
+                {
+                    db.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+
+                    ModelState.AddModelError(string.Empty,ex.Message);
+
+                    return View(view);
+                }
+
+                return RedirectToAction($"Details/{view.DepartmentId}");
+            }
+
+            return View(view);
+        }
+
+        public ActionResult DeleteMunicipality(int id)
+        {
+            var municipality = db.Municipalities.Find(id);
+
+            if (municipality == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            if (municipality == null)
+            {
+                return HttpNotFound();
+            }
+
+            db.Municipalities.Remove(municipality);
+
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+
+
+                if (ex.InnerException != null &&
+                  ex.InnerException.InnerException != null &&
+                  ex.InnerException.InnerException.Message.Contains("REFERENCE"))
+                {
+                    //ModelState.AddModelError(string.Empty, "Can't delete the record, because has related records.....");
+                    ViewBag.Error = "Can't delete the record, because has related records.....";
+                }
+                else
+                {
+                    //ModelState.AddModelError(string.Empty, ex.Message);
+
+                    ViewBag.Error = ex.Message;
+                    return RedirectToAction($"Details/{municipality.DepartmentId}");
+                }
+
+            }
+
+            return RedirectToAction($"Details/{municipality.DepartmentId}");
+        }
+
+        public ActionResult AddMunicipality(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            var department = db.Departaments.Find(id);
+
+            if (department == null)
+            {
+                return HttpNotFound();
+            }
+
+            var view = new Municipality
+            {
+                DepartmentId = department.DepartmentId,
+            };
+
+            return View(view);
+        }
+
+        [HttpPost]
+        public ActionResult AddMunicipality(Municipality view)
+        {
+            if (ModelState.IsValid)
+            {
+                db.Municipalities.Add(view);
+
+                try
+                {
+                    db.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+
+                    if (ex.InnerException != null &&
+                    ex.InnerException.InnerException != null &&
+                    ex.InnerException.InnerException.Message.Contains("Index"))
+                    {
+                        ModelState.AddModelError(string.Empty, "There are a record with the same name in the DB");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, ex.Message);
+                    }
+
+                    return View(view);
+
+                }
+
+                return RedirectToAction($"Details/{view.DepartmentId}");
+                //return RedirectToAction(string.Format("Details/{0}", view.DepartmentId));
+
+            }
+
+            return View(view);
+
+        }
+
         // GET: Departaments
         public ActionResult Index()
         {
-            return View(db.Departaments.OrderBy(d => d.Name).ToList());
+            var departments = db.Departaments.OrderBy(d => d.Name).ToList();
+
+            var views = new List<DepartmentView>();
+
+            foreach (var department in departments)
+            {
+                var view = new DepartmentView
+                {
+                    DepartmentId = department.DepartmentId,
+                    MunicipalityList = department.Municipalities.ToList(),
+                    Name = department.Name,
+                };
+
+                views.Add(view);
+            }
+
+            return View(views);
         }
 
         // GET: Departaments/Details/5
@@ -28,15 +192,25 @@ namespace Taxes.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Departament departament = db.Departaments.Find(id);
+
+            var departament = db.Departaments.Find(id);
+
             if (departament == null)
             {
                 return HttpNotFound();
             }
-            return View(departament);
+
+            var view = new DepartmentView
+            {
+                DepartmentId = departament.DepartmentId,
+                MunicipalityList = departament.Municipalities.OrderBy(m => m.Name).ToList(),
+                Name = departament.Name,
+            };
+
+            return View(view);
         }
 
-       
+
         // GET: Departaments/Create
         public ActionResult Create()
         {
@@ -98,7 +272,9 @@ namespace Taxes.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+
             Departament departament = db.Departaments.Find(id);
+
             if (departament == null)
             {
                 return HttpNotFound();
